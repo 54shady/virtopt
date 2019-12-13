@@ -115,3 +115,39 @@ tickless and dynamic tickless kernel(CONFIG_NO_HZ_FULL)
 未配置隔离核和全时钟中断的的情况下每个核上的中断一般在1000ticks左右
 
 配置后在隔离核上理论上只有1个ticks(实际测试平均都在10ticks以内)
+
+## 关于x2APIC
+
+[Virt2apic](https://fedoraproject.org/wiki/Features/Virtx2apic)
+
+**x2apic优点**
+
+- x2apic improves guest performance by reducing the overhead of APIC access,
+	which is used to program timers and for issuing inter-processor interrupts.
+	By exposing x2apic to guests, and by enabling the guest to utilize x2apic,
+	we improve guest performance
+
+- improved guest performance and lower cpu utilization
+
+x2APIC是硬件特性,内核提供一些参数来控制
+
+默认开启,可以在/etc/default/grub中禁止该功能
+
+	GRUB_CMDLINE_LINUX_DEFAULT="nox2apic"
+
+开机后查看是否由该功能
+
+	cat /proc/cpuinfo | ag x2apic
+	dmesg | ag x2apic
+
+**xAPIC模式**
+
+- APIC寄存器被映射到4KB大小的内存区,因此访问APIC是通过MMIO
+
+**x2APIC模式下**
+
+- 一部分MSR地址区间为APIC寄存器预留,访问APIC是通过MSR
+
+**测试方法**
+
+- measure the overhead of an IPI with and without x2apic
