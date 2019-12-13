@@ -501,3 +501,12 @@ trace.dat中有如下信息
 
 	trace-cmd record -e kvm_entry -e kvm_exit
 	trace-cmd report
+
+## 使用GDB调试Qemu
+
+使用qemu源码中的工具
+
+	cd qemu/scripts/
+	gdb --args qemu-system-x86_64 -enable-kvm -cpu host -smp $(nproc) -m 2048 -boot d -hda /path/to/vm.img
+	(gdb) source qemu-gdb.py
+	(gdb) help qemu
