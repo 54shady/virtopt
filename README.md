@@ -510,3 +510,25 @@ trace.dat中有如下信息
 	gdb --args qemu-system-x86_64 -enable-kvm -cpu host -smp $(nproc) -m 2048 -boot d -hda /path/to/vm.img
 	(gdb) source qemu-gdb.py
 	(gdb) help qemu
+
+## 深入理解KVM原理(KVMTOOL使用)
+
+准备ramdisk(linux-0.2.img)
+
+下载linux源码使用下面的配置编译内核
+
+	make kvmtool_defconfig
+	make
+
+下载lkvm
+
+	git clone git://git.kernel.org/pub/scm/linux/kernel/git/will/kvmtool.git
+	make
+
+启动虚拟机
+
+	$ ./lkvm run --disk /path/to/linux-0.2.img --kernel /path/to/arch/x86/boot/bzImage
+
+带网络启动虚拟机
+
+	# ./lkvm run --disk /path/to/linux-0.2.img --kernel /path/to/arch/x86/boot/bzImage --network virtio
