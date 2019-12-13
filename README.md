@@ -259,3 +259,29 @@ USS(UniqueSetSize)进程独自占用的内存,它是PSS中自己的部分`(PSS =
 在主机B上查看相应的结果
 
 	smem -S memorycapture.tar --bar name -s uss
+
+## perf火焰图(在测试机器上执行)
+
+发现使用同样的perf.data在不同机器上生成图片不一致
+
+获取flame源码
+
+	git clone https://github.com/brendangregg/FlameGraph.git
+
+采集qemu数据
+
+	perf record -a -g -p `pidof qemu-system-x86_64` sleep 30
+
+用perf script工具对perf.data进行解析
+
+	perf script -i perf.data &> perf.unfold
+
+将perf.unfold中的符号进行折叠
+
+	./stackcollapse-perf.pl perf.unfold &> perf.folded
+
+生成svg图片
+
+	./flamegraph.pl perf.folded > perf.svg
+
+或者将perf.data拷贝到FlameGraph目录中,执行脚本[genfg.sh](genfg.sh)
