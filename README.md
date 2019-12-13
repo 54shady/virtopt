@@ -228,3 +228,34 @@ cpu->last_load = (irq_load + softirq_load)
 	├── index1   -> L1 Instruction缓存
 	├── index2   -> L2 缓存
 	└── index3   -> L3 缓存
+
+## 内存信息
+
+RSS(ResidentSetSize)表示进程占用的物理内存大小, 但是将各进程的RSS值相加,通常会超出整个系统的内存消耗,这是因为RSS中包含了各进程间共享的内存
+
+PSS(ProportionalSet size)所有使用某共享库的程序均分该共享库占用的内存时,每个进程占用的内存,显然所有进程的PSS之和就是系统的内存使用量.它会更准确一些,它将共享内存的大小进行平均后,再分摊到各进程上去.
+
+USS(UniqueSetSize)进程独自占用的内存,它是PSS中自己的部分`(PSS = USS + sharelib)`,它只计算了进程独自占用的内存大小,不包含任何共享的部分
+
+- VSS(VirtualSetSize)虚拟耗用内存(包含共享库占用的内存)
+- RSS(ResidentSetSize)实际使用物理内存(包含共享库占用的内存)
+- PSS(ProportionalSetSize)实际使用的物理内存(比例分配共享库占用的内存)
+- USS(UniqueSetSize)进程独自占用的物理内存(不包含共享库占用的内存)
+
+### smem的使用
+
+根据rss查看内存使用情况饼图
+
+	smem --pie name -s rss
+
+根据uss查看内存使用情况柱形图
+
+	smem --bar name -s uss
+
+将主机A的信息采集后打包
+
+	smemcap > memorycapture.tar
+
+在主机B上查看相应的结果
+
+	smem -S memorycapture.tar --bar name -s uss
