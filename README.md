@@ -412,3 +412,50 @@ Analyzing
 绘3D图
 
 	./Generate_Graphs result.txt
+
+## 性能分析实例
+
+### 使用perf定位虚拟机卡顿问题
+
+现象:虚拟机卡顿,延时大,拖动窗口有残影,主机端qemu进程的cpu占用率非常高
+
+主机上收集qemu程序的信息
+
+	perf record -p `pidof qemu-system-x86_64`
+
+分析相关信息
+
+	perf report -i perf.data
+
+	# Overhead  Command          Shared Object               Symbol
+	# ........  ...............  ..........................  ...................................................
+	#
+		 8.41%  qemu-system-x86  [kernel.kallsyms]           [k] native_sched_clock
+		 7.46%  qemu-system-x86  [kernel.kallsyms]           [k] trace_graph_entry
+		 6.50%  qemu-system-x86  [kernel.kallsyms]           [k] trace_graph_return
+		 5.20%  qemu-system-x86  [kernel.kallsyms]           [k] ring_buffer_lock_reserve
+		 5.01%  qemu-system-x86  [kernel.kallsyms]           [k] __rb_reserve_next
+		 4.38%  qemu-system-x86  [kernel.kallsyms]           [k] rb_commit
+		 3.19%  qemu-system-x86  [kernel.kallsyms]           [k] tracing_generic_entry_update
+		 2.94%  CPU 0/KVM        [kernel.kallsyms]           [k] trace_graph_entry
+		 2.90%  CPU 0/KVM        [kernel.kallsyms]           [k] native_sched_clock
+		 2.66%  CPU 0/KVM        [kernel.kallsyms]           [k] trace_graph_return
+		 2.29%  qemu-system-x86  [kernel.kallsyms]           [k] ftrace_push_return_trace
+		 2.10%  qemu-system-x86  [kernel.kallsyms]           [k] ring_buffer_event_data
+		 1.90%  qemu-system-x86  [kernel.kallsyms]           [k] return_to_handler
+		 1.89%  qemu-system-x86  [kernel.kallsyms]           [k] ftrace_return_to_handler
+
+看到结果中调用trace相关的地方非常频繁
+
+查看后发现是因为开机了trace
+
+	cat /sys/kernel/debug/tracing/tracing_on
+	1
+
+关闭后qemu进程的cpu占用率降低,虚拟机不卡顿,但是perf.data里还是有相关trace调用
+
+	echo 0 > /sys/kernel/debug/tracing/tracing_on
+
+设置trace为nop关闭所有trace(此时的perf.data里就看不到相关的trace内容了)
+
+	echo nop >  /sys/kernel/debug/tracing/current_tracer
