@@ -459,3 +459,45 @@ Analyzing
 设置trace为nop关闭所有trace(此时的perf.data里就看不到相关的trace内容了)
 
 	echo nop >  /sys/kernel/debug/tracing/current_tracer
+
+## KMV事件分析
+
+[参考文章: 记一次虚拟化环境下Windows IO性能的解析](https://www.jianshu.com/p/8495e0f25107)
+
+首先使用kvm_stat确认KVM中哪些事件频繁
+
+	linux/tools/kvm/kvm_stat/kvm_stat
+
+### 使用trace获取KVM IO信息
+
+分析vmx_handle_exit退出原因
+
+- 访问IO Port(handle_pio)
+- 访问MMIO(handle_apic_access)
+- 其他
+
+使用trace获取相应的事件信息(得到trace.dat也可以使用kernelshark查看)
+
+	trace-cmd record -e kvm_pio -e kvm_mmio
+	trace-cmd report
+
+trace.dat中有如下信息
+
+	pio_read at 0x071 size 1 count 1 val 0xc0
+	pio_write at 0x70 size 1 count 1 val 0xc
+
+获取mtree信息(这里vm是domain name)
+
+	virsh qemu-monitor-command vm --hmp info mtree > mtree.txt
+
+在mtree.txt中查找相应的IOport(可以看到是rtc)
+
+	address-space: I/O
+    0000000000000070-0000000000000071 (prio 0, RW): rtc
+
+### 使用trace获取KVM entry/exit信息
+
+使用trace获取相应的事件信息(得到trace.dat也可以使用kernelshark查看)
+
+	trace-cmd record -e kvm_entry -e kvm_exit
+	trace-cmd report
