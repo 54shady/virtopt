@@ -328,3 +328,63 @@ USS(UniqueSetSize)进程独自占用的内存,它是PSS中自己的部分`(PSS =
 
 在Qemu源码中每个目录都有一个trace-events文件
 在这个文件中定义了trace中如何打印参数(对应trace.bin中的输出)
+
+## 通过qcow2 L2 cache
+
+[Improving disk IO performance](https://blogs.igalia.com/berto/2015/12/17/improving-disk-io-performance-in-qemu-2-5-with-the-qcow2-l2-cache/)
+
+qcow2镜像大小是on demand的
+qcow2的组成单元是clusters(default 64KB)
+
+手动修改cluster size大小为128KB
+
+	qemu-img create -f qcow2 -o cluster_size=128K hd.qcow2 4G
+
+qcow2 image通过两级表来映射给guest
+
+![l1l2](l1l2.png)
+
+一个disk image对应一个L1,且L1一直存在内存中
+L2的张数则和disk image的大小有关
+Qemu中为了加速对L2表的访问在内存中提供了L2的cache
+
+L2cache大小对性能的影响
+
+![l2cache](l2cache.png)
+
+可映射到guest的磁盘大小计算公式如下
+
+	disk_size = l2_cache_size * cluster_size / 8
+
+如果cluster_size默认64KB的话
+
+	disk_size = l2_cache_size * 8192
+
+如果要映射nGB磁盘大小的话l2 cache大小计算公式如下
+
+	l2_cache_size = disk_size_GB * 131072
+
+Qemu默认的L2 cache大小是1MB,所以对应的8GB的默认磁盘大小
+
+如何配置cache size
+
+- l2-cache-size: maximum size of the L2 table cache
+- refcount-cache-size: maximum size of the refcount block cache
+- cache-size: maximum size of both caches combined
+
+配置时需要注意的两点
+
+- L2 cache和refcount block cache都要是cluster size的倍数
+- 设之三面三个中的一个参数,qemu会自动调整其他两个参数保证(L2cache 大于4倍的refcount cache)
+
+所以下面的三条设置是等效的
+
+	-drive file=hd.qcow2,l2-cache-size=2097152
+	-drive file=hd.qcow2,refcount-cache-size=524288
+	-drive file=hd.qcow2,cache-size=2621440
+
+减少内存使用(多快照情况下)
+
+	-drive file=hd.qcow2,cache-clean-interval=900
+
+多个快照的情况下,可以将不需要使用的cache定时释放,减少内存使用
