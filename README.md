@@ -151,3 +151,80 @@ x2APIC是硬件特性,内核提供一些参数来控制
 **测试方法**
 
 - measure the overhead of an IPI with and without x2apic
+
+## 中断虚拟化(Interrupt)
+
+模拟中断和直接分配设备产生的中断示意图
+
+[参考来源:intel sdm vol 3c]()
+
+![host external guest virtual w:300px, h:300px](host_exter_guest_virt_int.png)
+
+### 中断亲和性(Interrupt Affinity)
+
+**Balancing Interrupts Manually**
+
+- 找出需要配置的中断
+- 确认平台是否支持中断分发
+	check BIOS
+
+- 确认APIC的工作模式
+	disable x2apic
+
+设置smp_affinity
+
+	echo mask > /proc/irq/irq_number/smp_affinity
+
+content of smp_affinity files can be obtained by
+
+	for i in $(seq 0 300); do grep . /proc/irq/$i/smp_affinity /dev/null 2>/dev/null; done
+
+查看中断N绑定的cpu
+
+	cat /proc/irq/N/smp_affinity_list
+
+### irqbalance代码实现
+
+irqbalance(v1.0.7)的主函数10s一个周期做以下事情
+
+- 清除上次统计结果
+- 分析中断情况
+- 分析中断的负载情况
+- 计算如何平衡中断
+- 实施上面指定的方案
+
+通过/proc/stat来计算中断负载(irq+softirq)
+
+以下时cpu0的数据
+
+|数值|参数|含义|
+|--|--|--
+|200118431|	user|	处于用户态的运行时间,不包含 nice值为负进程
+|1258|	nice|	nice值为负的进程所占用的CPU时间
+|112897097|	system|	处于核心态的运行时间
+|1062445972|	idle|	除IO等待时间以外的其它等待时间
+|321829|	iowait|	IO等待时间(since 2.5.41)
+|0|	irq|	硬中断时间
+|1048436|	softirq|	软中断时间
+|0|	steal|	-
+|0|	guest|	-
+|0|	guest_nice|	-
+
+cpu->last_load = (irq_load + softirq_load)
+
+- 每个CORE的负载是附在上面的中断的负载的总和
+- 每个DOMAIN是包含的CORE的总和
+- 每个PACKAGE包含的DOMAIN的总和,就像树层次一样的计算
+
+### 关于Cache
+
+[参考: irqbalance详解](https://segmentfault.com/a/1190000015426246)
+
+查看cpu各cache的信息
+
+	tree -L 1 /sys/devices/system/cpu/cpu0/cache/
+	/sys/devices/system/cpu/cpu0/cache/
+	├── index0   -> L1 data缓存
+	├── index1   -> L1 Instruction缓存
+	├── index2   -> L2 缓存
+	└── index3   -> L3 缓存
