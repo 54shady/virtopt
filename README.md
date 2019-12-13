@@ -388,3 +388,17 @@ Qemu默认的L2 cache大小是1MB,所以对应的8GB的默认磁盘大小
 	-drive file=hd.qcow2,cache-clean-interval=900
 
 多个快照的情况下,可以将不需要使用的cache定时释放,减少内存使用
+
+## trace-cmd
+
+Tracing
+
+	# trace-cmd record -b 20000 -e kvm
+
+run your workload, then stop trace-cmd with ctrl-C. trace-cmd will write a
+trace.dat file
+
+Analyzing
+
+	trace-cmd report
+	or using kernelshark
