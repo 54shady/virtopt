@@ -402,3 +402,13 @@ Analyzing
 
 	trace-cmd report
 	or using kernelshark
+
+## IOzone
+
+开始测试
+
+	iozone -a > result.txt
+
+绘3D图
+
+	./Generate_Graphs result.txt
