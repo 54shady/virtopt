@@ -66,3 +66,52 @@
 	pid(14918) CPU 1/KVM
 	pid(14921) SPICE Worker
 	pid(14922) vnc_worker
+
+## CPU隔离
+
+[Linux的tickless设置](http://www.litrin.net/2018/11/15/linux的tickless设置/)
+
+![idv](idv.png)
+
+isolcpus
+
+- isolate one or more CPUs from the scheduler with the isolcpus boot parameter.
+	This prevents the scheduler from scheduling any user-space threads on this CPU.
+
+- Once a CPU is isolated, you must manually assign processes to the isolated CPU,
+	either with the CPU affinity system calls or the numactl command
+
+tickless and dynamic tickless kernel(CONFIG_NO_HZ_FULL)
+
+- tickless does not interrupt idle CPUs in order to reduce power usage and allow newer processors to take advantage of deep sleep states
+- dynamic tickless is useful for very latency-sensitive workloads, such as high performance computing or realtime computing
+
+开启内核配置选项(dynamic tickless config)
+
+	CONFIG_NO_HZ_FULL
+
+通过在启动参数中设置isolcpus来配置cpu隔离和内核tick
+
+在/etc/default/grub中设置
+
+	GRUB_CMDLINE_LINUX_DEFAULT="isolcpus=1,3 nohz_full=1,3"
+
+重新生成grub.cfg
+
+	grub-mkconfig -o /boot/grub/grub.cfg
+
+查看修改是否成功
+
+	cat /proc/cmdline
+
+测试程序
+
+	# ./isol_cpu_test.sh
+
+对测试结果解读
+
+	grep 'Local timer interrupts' /proc/interrupts
+
+未配置隔离核和全时钟中断的的情况下每个核上的中断一般在1000ticks左右
+
+配置后在隔离核上理论上只有1个ticks(实际测试平均都在10ticks以内)
