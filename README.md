@@ -285,3 +285,46 @@ USS(UniqueSetSize)进程独自占用的内存,它是PSS中自己的部分`(PSS =
 	./flamegraph.pl perf.folded > perf.svg
 
 或者将perf.data拷贝到FlameGraph目录中,执行脚本[genfg.sh](genfg.sh)
+
+## Qemu Trace
+
+[参考qemu2.7/doc/tracing.txt](tracing.txt)
+
+编译Qemu的时候配置相关的选项
+
+    ./configure --enable-trace-backends=simple
+
+在gentoo中手动修改ebuild文件后通过localoverlay安装
+
+手动创建一个需要trace的事件列表(可选)
+
+	echo bdrv_aio_readv   > /tmp/events
+	echo bdrv_aio_writev >> /tmp/events
+
+启动Qemu时设定events,trace file, monitor
+
+    qemu -trace events=/tmp/events,file=trace.bin -monitor stdio ...
+
+使用qemu源码中的脚本分析trace file(trace.bin)
+
+	cd qemu-source/
+	./simpletrace.py ../trace-events /path/to/trace.bin
+	./simpletrace.py ../trace-events-all /path/to/trace.bin
+
+输出格式
+
+	eventname delta_ns/1000 pid args...
+	事件名字 耗时(us) 进程ID 函数参数
+
+在Qemu monitor中设置event
+
+	(qemu) trace-event xxx-event <on | off>
+
+开关trace file功能
+
+	(qemu) trace-file <on | off>
+
+### TraceEvent的使用
+
+在Qemu源码中每个目录都有一个trace-events文件
+在这个文件中定义了trace中如何打印参数(对应trace.bin中的输出)
