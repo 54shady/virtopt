@@ -1,9 +1,10 @@
-# 虚拟机性能优化
+# 虚拟机性能优化和调试
 
 [参考RHEL7 PerformanceTuningGuide](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/pdf/performance_tuning_guide/Red_Hat_Enterprise_Linux-7-Performance_Tuning_Guide-en-US.pdf)
 
 ## 开始前的准备
 
+### [kdump和crash环境搭建](kdump_crash.md)
 ### 编译Qemu文档
 
 进入文档目录
@@ -532,3 +533,4 @@ trace.dat中有如下信息
 带网络启动虚拟机
 
 	# ./lkvm run --disk /path/to/linux-0.2.img --kernel /path/to/arch/x86/boot/bzImage --network virtio
+
