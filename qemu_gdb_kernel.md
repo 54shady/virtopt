@@ -20,7 +20,7 @@
 
 使用qemu启动内核(内核会卡在stopped状态)
 
-	qemu-system-x86_64 -S /dev/zero -kernel arch/x86/boot/bzImage -initrd initramfs-genkernel-x86_64-4.19.72-gentoo.cpio.gz -gdb tcp::1234
+	qemu-system-x86_64 -S -kernel arch/x86/boot/bzImage -initrd initramfs-genkernel-x86_64-4.19.72-gentoo.cpio.gz -gdb tcp::1234
 
 可以配置gdb全局的配置文件(~/.gdbinit)
 
