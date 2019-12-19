@@ -38,9 +38,9 @@
 
 	qemu-system-x86_64 -S -kernel arch/x86/boot/bzImage -initrd rootfs.cpio.gz -gdb tcp::1234
 
-可以配置gdb全局的配置文件(~/.gdbinit)
+可以选择性配置gdb全局的配置文件(~/.gdbinit)
 
-	target remote localhost:1234
+    target remote localhost:1234
 
 使用gdb调试
 
@@ -48,3 +48,7 @@
 	(gdb) target remote localhost:1234
 	(gdb) b start_kernel
 	(gdb) continue
+
+单条命令操作
+
+	gdb -ex 'target remote localhost:1234' -ex 'b start_kernel' -ex 'continue' -ex 'layout src' /path/to/vmlinux
