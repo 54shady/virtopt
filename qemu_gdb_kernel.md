@@ -44,7 +44,7 @@
 
 使用gdb调试
 
-	gdb ./vmlinux
+	gdb /path/to/vmlinux
 	(gdb) target remote localhost:1234
 	(gdb) b start_kernel
 	(gdb) continue
