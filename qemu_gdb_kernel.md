@@ -30,6 +30,12 @@
 
 使用qemu启动内核(内核会卡在stopped状态)
 
+如果有配置CONFIG_RANDOMIZE_BASE则需要在cmdline里添加nokaslr(否则打断点无法停住,也无法显示函数名称)
+
+	qemu-system-x86_64 -S -kernel arch/x86/boot/bzImage -initrd rootfs.cpio.gz -gdb tcp::1234 --append "nokaslr"
+
+可以在编译内核的时候去掉CONFIG_RANDOMIZE_BASE
+
 	qemu-system-x86_64 -S -kernel arch/x86/boot/bzImage -initrd rootfs.cpio.gz -gdb tcp::1234
 
 可以配置gdb全局的配置文件(~/.gdbinit)
@@ -40,4 +46,5 @@
 
 	gdb ./vmlinux
 	(gdb) target remote localhost:1234
+	(gdb) b start_kernel
 	(gdb) continue
