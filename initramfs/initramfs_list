@@ -1,0 +1,28 @@
+# directory structure
+dir /proc       755 0 0
+dir /usr        755 0 0
+dir /bin        755 0 0
+dir /sys        755 0 0
+dir /var        755 0 0
+dir /lib        755 0 0
+dir /sbin       755 0 0
+#dir /lib64      755 0 0
+#dir /lib32      755 0 0
+dir /mnt        755 0 0
+dir /mnt/root   755 0 0
+dir /etc        755 0 0
+dir /root       700 0 0
+dir /dev        755 0 0
+
+# busybox
+file /bin/busybox /bin/busybox 755 0 0
+
+# libraries required by /sbin/fsck.ext4 and /sbin/fsck
+file    /lib/ld-linux.so.2      /lib/ld-linux.so.2                  755 0 0
+file    /lib/libpthread.so.0    /lib/libpthread.so.0                755 0 0
+file    /lib/libc.so.6          /lib/libc.so.6                      755 0 0
+file    /lib/librt.so.1         /lib/librt.so.1                     755 0 0
+file    /sbin/fsck.ext4         /sbin/fsck.ext4                     755 0 0
+
+# our init script
+file    /init                   /usr/src/initramfs/init             755 0 0

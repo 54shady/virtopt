@@ -1,0 +1,111 @@
+#!/bin/busybox sh
+
+rescue_shell() {
+    echo "$@"
+    echo "Something went wrong. Dropping you to a shell."
+    busybox --install -s
+    exec /bin/sh
+}
+
+uuidlabel_root() {
+    for cmd in $(cat /proc/cmdline) ; do
+        case $cmd in
+        root=*)
+            type=$(echo $cmd | cut -d= -f2)
+            echo "Mounting rootfs"
+            if [ $type == "LABEL" ] || [ $type == "UUID" ] ; then
+                uuid=$(echo $cmd | cut -d= -f3)
+                mount -o ro $(findfs "$type"="$uuid") /mnt/root
+            else
+                mount -o ro $(echo $cmd | cut -d= -f2) /mnt/root
+            fi
+            ;;
+        esac
+    done
+}
+
+check_filesystem() {
+    # most of code coming from /etc/init.d/fsck
+
+    local fsck_opts= check_extra= RC_UNAME=$(uname -s)
+
+    # FIXME : get_bootparam forcefsck
+    if [ -e /forcefsck ]; then
+        fsck_opts="$fsck_opts -f"
+        check_extra="(check forced)"
+    fi
+
+    echo "Checking local filesystem $check_extra : $1"
+
+    if [ "$RC_UNAME" = Linux ]; then
+        fsck_opts="$fsck_opts -C0 -T"
+    fi
+
+    trap : INT QUIT
+
+    # using our own fsck, not the builtin one from busybox
+    /sbin/fsck -p $fsck_opts $1
+
+    case $? in
+        0)      return 0;;
+        1)      echo "Filesystem repaired"; return 0;;
+        2|3)    if [ "$RC_UNAME" = Linux ]; then
+                        echo "Filesystem repaired, but reboot needed"
+                        reboot -f
+                else
+                        rescue_shell "Filesystem still have errors; manual fsck required"
+                fi;;
+        4)      if [ "$RC_UNAME" = Linux ]; then
+                        rescue_shell "Fileystem errors left uncorrected, aborting"
+                else
+                        echo "Filesystem repaired, but reboot needed"
+                        reboot
+                fi;;
+        8)      echo "Operational error"; return 0;;
+        12)     echo "fsck interrupted";;
+        *)      echo "Filesystem couldn't be fixed";;
+    esac
+    rescue_shell
+}
+
+# temporarily mount proc and sys
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
+
+# disable kernel messages from popping onto the screen
+echo 0 > /proc/sys/kernel/printk
+
+# clear the screen
+clear
+
+# mounting rootfs on /mnt/root
+uuidlabel_root || rescue_shell "Error with uuidlabel_root"
+
+# space separated list of mountpoints that ...
+mountpoints="/usr" #note: you can add more than just usr, but make sure they are declared in /usr/src/initramfs/initramfs_list
+
+# ... we want to find in /etc/fstab ...
+ln -s /mnt/root/etc/fstab /etc/fstab
+
+# ... to check filesystems and mount our devices.
+for m in $mountpoints ; do
+    check_filesystem $m
+
+    echo "Mounting $m"
+    # mount the device and ...
+    mount $m || rescue_shell "Error while mounting $m"
+
+    # ... move the tree to its final location
+    mount --move $m "/mnt/root"$m || rescue_shell "Error while moving $m"
+done
+
+echo "All done. Switching to real root."
+
+# clean up. The init process will remount proc sys and dev later
+umount /proc
+umount /sys
+umount /dev
+
+# switch to the real root and execute init
+exec switch_root /mnt/root /sbin/init
