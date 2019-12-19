@@ -15,7 +15,7 @@
 使用内核中(gen_initramfs_list.sh)脚本生成
 
 	cd /usr/src/linux
-	./usr/gen_initramfs_list.sh -o rootfs.cpio.gz /path/to/initramfs/initramfs_list
+	./usr/gen_initramfs_list.sh -o rootfs.cpio.gz /usr/src/initramfs/initramfs_list
 
 或者使用系统中已经生成的(/boot/initramfs-genkernel-x86_64-4.19.72-gentoo)
 
