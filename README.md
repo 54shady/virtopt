@@ -4,9 +4,11 @@
 
 ## 开始前的准备
 
-### [kdump和crash环境搭建](kdump_crash.md)
+### [Kdump和Crash环境搭建](kdump_crash.md)
 
 ### [使用Qemu调试Linux内核](qemu_gdb_kernel.md)
+
+### [使用KGDB调试Linux内核](hack_kgdb.md)
 
 ### 编译Qemu文档
 
