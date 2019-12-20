@@ -89,6 +89,19 @@ crashkernel=384-:128表示当可用内存大于384才会触发dump,否则会因�
 
 	GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT crashkernel=384M-:512M"
 
+## Kdump原理
+
+[参考Linux Kexec介绍](https://www.cnblogs.com/wahaha02/p/7152796.html)
+
+kexec的功能是用一个运行的内核去运行一个新内核.这种机制因为跳过了bootloader,可以实现系统的快速重启.kdump也是基于kexec实现
+
+![kexec](kexec.png)
+
+kexec使用示例
+
+	kexec -l bzImage --initrd rootfs.cpio.gz
+	kexec -e
+
 ## FAQ
 
 crash本身软件版本问题(7.2.3, 更换7.2.7后问题解决)
