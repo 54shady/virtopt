@@ -1,5 +1,7 @@
 # Ubuntu 16.04(xenial) Kdump Crash使用
 
+[参考kernel-crash-dump](https://help.ubuntu.com/lts/serverguide/kernel-crash-dump.html)
+
 ## 内核源码准备
 
 	apt-get install linux-source-4.15.0
@@ -43,6 +45,24 @@
 
 	BOOT_IMAGE=/boot/vmlinuz-4.15.18 root=UUID=93175768-5bee-47b8-8841-383fe2cd2c6e ro quiet splash crashkernel=384M-:128M crashkernel=384M-:128M vt.handoff=7
 
+crashkernel参数解释
+
+crashkernel=384M-2G:64M,2G-:128M
+
+- if the RAM is smaller than 384M, then don't reserve anything (this is the "rescue" case)
+- if the RAM size is between 386M and 2G (exclusive), then reserve 64M
+- if the RAM size is larger than 2G, then reserve 128M
+
+crashkernel=384-:128表示当可用内存大于384才会触发dump,否则会因内存不足而不触发
+
+可以在内核日志中查看到结果
+
+	dmesg | grep -i crash
+
+	...
+	[    0.000000] Reserving 64MB of memory at 800MB for crashkernel (System RAM: 1023MB)
+
+
 查看sysrq状态
 
 	cat /proc/sys/kernel/sysrq
@@ -64,3 +84,13 @@
 使用crash调试(crash <带调试信息的内核> <dump file>)
 
 	crash /usr/src/linux-source-4.15.0/vmlinux /var/crash/201912172043/dump.201912172043
+
+如果触发不了很可能是由于内存大小不够导致,调整内存大小即可(/etc/default/grub.d/kdump-tools.cfg)
+
+	GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT crashkernel=384M-:512M"
+
+## FAQ
+
+crash本身软件版本问题(7.2.3, 更换7.2.7后问题解决)
+
+	crash: invalid size request: -2812443080  type: "module gpl symbol strings" Segmentation fault
