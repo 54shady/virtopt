@@ -1,0 +1,7 @@
+set debug auto-load on
+set auto-load safe-path .
+file vmlinux
+target remote udp:172.20.101.124:31337
+b vmx_handle_exit
+layout src
+continue

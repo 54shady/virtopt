@@ -4,6 +4,8 @@
 
 ## 开始前的准备
 
+### [make debug suckless](debug_suckless.md)
+
 ### [Kdump和Crash环境搭建](kdump_crash.md)
 
 ### [使用Qemu调试Linux内核](qemu_gdb_kernel.md)
@@ -12,9 +14,13 @@
 
 ### KVM编译
 
-全编时使用O0编译KVM模块
+全编时使用O0编译kvm_main模块
 
 	make CFLAGS_kvm_main.o='-O0 -ftree-ter'
+
+全编时使用O0编译所有kmv模块
+
+	make CFLAGS_kvm-intel.o='-O0 -ftree-ter' CFLAGS_kvm.o='-O0 -ftree-ter'
 
 或单独编译时使用O0编译
 

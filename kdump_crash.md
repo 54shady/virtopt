@@ -2,6 +2,11 @@
 
 [参考kernel-crash-dump](https://help.ubuntu.com/lts/serverguide/kernel-crash-dump.html)
 
+## crash whitepaper
+
+	apt-get install crash-whitepaper
+	dpkg -L crash-whitepaper
+
 ## 内核源码准备
 
 	apt-get install linux-source-4.15.0
