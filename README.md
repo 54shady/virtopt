@@ -4,7 +4,7 @@
 
 ## 开始前的准备
 
-### [make debug suckless](debug_suckless.md)
+### [Make Debug Suckless](debug_suckless.md)
 
 ### [Kdump和Crash环境搭建](kdump_crash.md)
 

@@ -25,6 +25,9 @@
 使用O0编译vmx后才能调试vmcs
 
 	(gdb) b vmx_vcpu_load
+	(gdb) b vmx_vcpu_run
+	(gdb) b vmx_complete_interrupts
 	(gdb) p *vmx
 	(gdb) p *vmx->loaded_vmcs
 	(gdb) p *vmx->loaded_vmcs->msr_bitmap
+	(gdb) display *vmx->loaded_vmcs
