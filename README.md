@@ -12,19 +12,7 @@
 
 ### [使用KGDB调试Linux内核](hack_kgdb.md)
 
-### KVM编译
-
-全编时使用O0编译kvm_main模块
-
-	make CFLAGS_kvm_main.o='-O0 -ftree-ter'
-
-全编时使用O0编译所有kmv模块
-
-	make CFLAGS_kvm-intel.o='-O0 -ftree-ter' CFLAGS_kvm.o='-O0 -ftree-ter'
-
-或单独编译时使用O0编译
-
-	make CONFIG_KVM=y CONFIG_INTEL_KVM=y M=arch/x86/kvm CFLAGS_kvm_main.o='-O0 -ftree-ter'
+### [KVM编译使用O0选项](kvmO0.md)
 
 ### 编译Qemu文档
 
