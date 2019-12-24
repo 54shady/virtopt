@@ -74,6 +74,19 @@
 
 	ln -s scripts/gdb/vmlinux-gdb.py
 
+## Build minimal system stage4 tarball
+
+Using [script gen_stage4.sh](gen_stage4.sh) for ubuntu 16.04 minimal system backup and migration
+
+cd to top root and run script(backup)
+
+	cd /
+	./gen_stage4.sh
+
+deploy the stage4 tarball(install system)
+
+	tar jxvf stage4.tar.bz2 -C /
+
 ## 分布式编译
 
 [参考:distcc加速内核编译](https://blog.csdn.net/weixin_30439067/article/details/96560971)
