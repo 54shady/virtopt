@@ -69,4 +69,7 @@
 
 主机端同步代码
 
-	rsync -vzurtopg --progress --delete 172.20.101.124::ftp ./
+	cp exclude_list /tmp/
+	rsync -vzurtopg --progress --delete --exclude-from=/tmp/exclude_list 172.20.101.124::ftp ./
+
+	ln -s scripts/gdb/vmlinux-gdb.py

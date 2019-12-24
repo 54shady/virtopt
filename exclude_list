@@ -1,0 +1,6 @@
+*.o
+*.ur-safe
+*.cmd
+*.builtin
+.tmp*
+*.ko
