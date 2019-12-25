@@ -14,6 +14,8 @@
 
 ### [KVM编译使用O0选项](kvmO0.md)
 
+### [VMCS Hacking](vmcs_hack.md)
+
 ### 编译Qemu文档
 
 进入文档目录
