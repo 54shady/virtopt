@@ -2,6 +2,15 @@
 
 ## KGDBoE
 
+内核配置选项
+
+	CONFIG_NETCONSOLE=y
+	CONFIG_KGDB=y
+	CONFIG_DEBUG_INFO=y
+	CONFIG_DEBUG_INFO_DWARF4=y
+	CONFIG_GDB_SCRIPTS=y
+	CONFIG_KALLSYMS_ALL=y
+
 **Client端(被调试的机器)操作**
 
 下载kgdboe源码
