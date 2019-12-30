@@ -545,3 +545,6 @@ trace.dat中有如下信息
 
 	# ./lkvm run --disk /path/to/linux-0.2.img --kernel /path/to/arch/x86/boot/bzImage --network virtio
 
+## eBPF
+
+[bpf and bcc](bpf.md)
