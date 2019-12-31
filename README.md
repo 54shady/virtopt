@@ -1,6 +1,8 @@
 # 虚拟机性能优化和调试
 
-[参考RHEL7 PerformanceTuningGuide](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/pdf/performance_tuning_guide/Red_Hat_Enterprise_Linux-7-Performance_Tuning_Guide-en-US.pdf)
+[参考:RHEL7 PerformanceTuningGuide](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/pdf/performance_tuning_guide/Red_Hat_Enterprise_Linux-7-Performance_Tuning_Guide-en-US.pdf)
+
+[参考:Brendan D. Gregg个人网站](http://www.brendangregg.com/index.html)
 
 ## 开始前的准备
 
@@ -38,6 +40,13 @@
 生成文件
 
 	Documentation/output/index.html
+
+## 性能问题分类
+
+性能问题可以分如下两大类(虚拟化中也包含,还包含虚拟化部分)
+
+- On-CPU 线程消耗CPU时间
+- Off-CPU 等待IO,locks,timers,paging/swaping,etc.
 
 ## Latency
 
