@@ -15,6 +15,10 @@ Install and compile BCC
 	make
 	sudo make install
 
+默认安装路径在(/usr/share/bcc/tools/)
+
+	export PATH=$PATH:/usr/share/bcc/tools
+
 ## Basic Usage(/usr/share/bcc/tools)
 
 查看每个disk IO的延时
