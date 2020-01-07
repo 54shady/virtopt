@@ -32,6 +32,12 @@
 
 	tty -s && mesg n || true
 
+## 特殊账户创建
+
+创建具有root权限的帐号
+
+	useradd -u 0 -o -g root -G root usera
+
 ## 主机端同步调试机(172.20.101.124)的代码
 
 客户端配置rsync(/etc/default/rsync)
@@ -168,3 +174,7 @@ deploy the stage4 tarball(install system)
 
 	cd /tmp/extract-cd
 	mkisofs -D -r -V "myubuntu" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../ubuntu-desktop-custom.iso .
+
+安装ISO若现卡在detecting file system则在安装前执行下面操作
+
+	umount -l /isodevice
