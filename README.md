@@ -523,7 +523,7 @@ trace.dat中有如下信息
 	trace-cmd record -e kvm_entry -e kvm_exit
 	trace-cmd report
 
-## 使用GDB调试Qemu
+## 使用GDB调试Qemu(利用源码中scripts里的脚本)
 
 使用qemu源码中的工具
 
@@ -531,6 +531,15 @@ trace.dat中有如下信息
 	gdb --args qemu-system-x86_64 -enable-kvm -cpu host -smp $(nproc) -m 2048 -boot d -hda /path/to/vm.img
 	(gdb) source qemu-gdb.py
 	(gdb) help qemu
+
+### 将虚拟机内存dump到文件中
+
+	(gdb) source /qemu_src/scripts/dump-guest-memory.py
+	(gdb) dump-guest-memory /file/to/store/vmcore X86_64
+
+使用volatility工具分析
+
+	git clone https://github.com/volatilityfoundation/volatility
 
 ## 深入理解KVM原理(KVMTOOL使用)
 
