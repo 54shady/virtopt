@@ -532,14 +532,31 @@ trace.dat中有如下信息
 	(gdb) source qemu-gdb.py
 	(gdb) help qemu
 
-### 将虚拟机内存dump到文件中
+### 将虚拟机内存dump到文件(vmcore)中
 
 	(gdb) source /qemu_src/scripts/dump-guest-memory.py
 	(gdb) dump-guest-memory /file/to/store/vmcore X86_64
 
-使用volatility工具分析
+使用volatility工具分析(python2)
 
 	git clone https://github.com/volatilityfoundation/volatility
+
+安装distrom
+
+	git clone https://github.com/gdabah/distorm
+	python setup.py install
+
+打印所有进程情况
+
+	python vol.py --profile=Win7SP1x64 -f vmcore pslist
+
+保存屏幕截图
+
+	python vol.py --profile=Win7SP1x64 -f vmcore screenshot --dump-dir /path/to/somewhere
+
+将内存信息保存为windows可以识别的格式用windbg调试(需要以.dmp结尾才可被windbg识别到)
+
+	python vol.py --profile=Win7SP1x64 --plugins=raw2dmp -f vmcore raw2dmp --output-image=vmcore.dmp
 
 ## 深入理解KVM原理(KVMTOOL使用)
 
