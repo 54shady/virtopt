@@ -143,36 +143,34 @@ deploy the stage4 tarball(install system)
 
 	distcc-pump make -j$(distcc -j) CFLAGS_vmx.o='-O0 -ftree-ter' CFLAGS_kvm.o='-O0 -ftree-ter' CC="distcc ${CROSS_COMPILE}gcc"
 
-## make ubuntu ISO
+## make ubuntu ISO(所有操作都使用root用户执行)
 
 [参考: LiveCDCustomization](https://help.ubuntu.com/community/LiveCDCustomization)
 
-挂载基础ISO,拷贝所有文件到到extract-cd
+挂载基础ISO,拷贝所有文件到到livecd
 
 	mount -o loop /path/to/ubuntu-16.04.4-desktop-amd64.iso /media/
-	rsync -a /media/ /tmp/extract-cd
+	rsync -a /media/ livecd
 
-制作rootfs
+在ISO基础上使用stage4制作rootfs(需要利用ubiquity)
 
-	cd /tmp
 	unsquashfs /media/casper/filesystem.squashfs
-	mv squashfs-root edit
+	tar jxvf /path/to/stage4.tar.bz2 -C squashfs-root/
 
-	tar jxvf /path/to/stage4.tar.bz2 -C /tmp/edit
-	rm /tmp/extract-cd/casper/filesystem.squashfs
-	mksquashfs edit /tmp/extract-cd/casper/filesystem.squashfs -b 1048576
+打包新的squashfs
 
-更新文件系统信息
+	rm livecd/casper/filesystem.squashfs
+	mksquashfs squashfs-root livecd/casper/filesystem.squashfs -b 1048576
+	printf $(du -sx --block-size=1 squashfs-root | cut -f1) > livecd/casper/filesystem.size
 
-	printf $(du -sx --block-size=1 edit | cut -f1) > /tmp/extract-cd/casper/filesystem.size
+进入livecd操作更新md5信息
 
-	cd /tmp/extract-cd/
+	cd livecd
 	rm md5sum.txt
-	find -type f -print0 | sudo xargs -0 md5sum | grep -v isolinux/boot.cat | sudo tee md5sum.txt
+	find -type f -print0 | xargs -0 md5sum | grep -v isolinux/boot.cat | tee md5sum.txt
 
 制作ISO文件
 
-	cd /tmp/extract-cd
 	mkisofs -D -r -V "myubuntu" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../ubuntu-desktop-custom.iso .
 
 安装ISO若现卡在detecting file system则在安装前执行下面操作
