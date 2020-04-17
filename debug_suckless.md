@@ -32,6 +32,19 @@
 
 	tty -s && mesg n || true
 
+## vnc使用密码文件输入
+
+使用vncpasswd命令生成密码文件
+
+	vncpasswd you-local-passwd-file
+	Password: -------------[输入vnc密码]
+	Verify: -------------[重复输入vnc密码]
+	Would you like to enter a view-only password (y/n)? n
+
+使用密码文件登录
+
+	vncviewer -passwd you-local-passwd-file ip:port
+
 ## 特殊账户创建
 
 创建具有root权限的帐号
