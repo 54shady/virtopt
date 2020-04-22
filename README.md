@@ -536,8 +536,16 @@ trace.dat中有如下信息
 
 ### 将虚拟机内存dump到文件(vmcore)中
 
+[volatility使用方法](https://github.com/volatilityfoundation/volatility/wiki/Volatility-Usage)
+
+使用GDB获取虚拟机内存
+
 	(gdb) source /qemu_src/scripts/dump-guest-memory.py
-	(gdb) dump-guest-memory /file/to/store/vmcore X86_64
+	(gdb) dump-guest-memory /path/to/store/vmcore X86_64
+
+使用virsh命令获取虚拟机内存
+
+	virsh qemu-monitor-command <domain> --hmp dump-guest-memory /path/to/vmcore
 
 使用volatility工具分析(python2)
 
@@ -550,7 +558,7 @@ trace.dat中有如下信息
 
 打印所有进程情况
 
-	python vol.py --profile=Win7SP1x64 -f vmcore pslist
+	python vol.py --profile=Win7SP1x64 -f vmcore pslist --tz=Asia/Shanghai
 
 保存屏幕截图
 
