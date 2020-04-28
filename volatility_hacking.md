@@ -55,11 +55,11 @@
 
 	zip Ubuntu.zip module.dwarf /boot/System.map-4.13.0-36-generic
 
-将zip文件放到相应目录下(文件名必须为Ubuntu.zip)
+将zip文件放到相应目录下
 
 	mv Ubuntu.zip volatility/plugins/overlays/linux/
 
-查看生成的profile名字(LinuxUbuntux64)
+查看生成的profile名字(生成了对应的名字LinuxUbuntux64)
 
 	python vol.py --info
 
