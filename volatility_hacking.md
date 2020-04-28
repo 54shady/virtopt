@@ -59,6 +59,10 @@
 
 	mv Ubuntu.zip volatility/plugins/overlays/linux/
 
+查看生成的profile名字(LinuxUbuntux64)
+
+	python vol.py --info
+
 执行相应命令
 
 	python vol.py --profile=LinuxUbuntux64 -f vmcore-ubuntu1604 linux_pslist
