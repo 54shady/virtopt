@@ -20,6 +20,8 @@
 
 ### [Hacking source code with GDB](hacking_using_gdb.md)
 
+### [使用volatility分析内存](volatility_hacking.md)
+
 ### 编译Qemu文档
 
 进入文档目录
@@ -533,40 +535,6 @@ trace.dat中有如下信息
 	gdb --args qemu-system-x86_64 -enable-kvm -cpu host -smp $(nproc) -m 2048 -boot d -hda /path/to/vm.img
 	(gdb) source qemu-gdb.py
 	(gdb) help qemu
-
-### 将虚拟机内存dump到文件(vmcore)中
-
-[volatility使用方法](https://github.com/volatilityfoundation/volatility/wiki/Volatility-Usage)
-
-使用GDB获取虚拟机内存
-
-	(gdb) source /qemu_src/scripts/dump-guest-memory.py
-	(gdb) dump-guest-memory /path/to/store/vmcore X86_64
-
-使用virsh命令获取虚拟机内存
-
-	virsh qemu-monitor-command <domain> --hmp dump-guest-memory /path/to/vmcore
-
-使用volatility工具分析(python2)
-
-	git clone https://github.com/volatilityfoundation/volatility
-
-安装distrom
-
-	git clone https://github.com/gdabah/distorm
-	python setup.py install
-
-打印所有进程情况
-
-	python vol.py --profile=Win7SP1x64 -f vmcore pslist --tz=Asia/Shanghai
-
-保存屏幕截图
-
-	python vol.py --profile=Win7SP1x64 -f vmcore screenshot --dump-dir /path/to/somewhere
-
-将内存信息保存为windows可以识别的格式用windbg调试(需要以.dmp结尾才可被windbg识别到)
-
-	python vol.py --profile=Win7SP1x64 --plugins=raw2dmp -f vmcore raw2dmp --output-image=vmcore.dmp
 
 ## 深入理解KVM原理(KVMTOOL使用)
 
