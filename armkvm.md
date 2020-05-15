@@ -4,6 +4,13 @@
 
 [用到的内核v5.7配置文件](arm64_defconfig)
 
+用到如下内核配置
+
+	CONFIG_VIRTIO_NET
+	CONFIG_VIRTIO_BLK
+	CONFIG_EXT4_FS
+	CONFIG_BLK_DEV_RAM
+
 [用到的busybox-1.31.1配置文件](kunpeng920_defconfig)
 
 ## 制作ramdisk(使用busybox-1.31.1)
@@ -14,7 +21,7 @@
 	make kunpeng920_defconfig
 	make install -j4
 
-构建文件系统目录[etc下所有配置文件](etc)
+构建文件系统目录[添加etc下所有配置文件](etc)
 
 	mkdir -p ramdiskfs/{var,tmp,sys,root,proc,opt,mnt,lib,home,etc,dev}
 	sudo mknod ramdiskfs/dev/console c 5 1
@@ -39,17 +46,12 @@
 
 ## 内核配置和编译
 
-内核需要开启支持的选项
-
-	CONFIG_EXT4_FS
-	CONFIG_BLK_DEV_RAM
-
 编译内核
 
 	mv arm64_defconfig arch/arm64/configs/
 	make arm64_defconfig
 
-## 启动虚拟机
+## 使用ramdisk启动虚拟机
 
 使用下面命令启动虚拟机
 
@@ -58,10 +60,6 @@
 ## 使用linux发行版本启动虚拟机
 
 [参考kernel_drivers_examples中rk3399制作系统镜像](https://github.com/54shady/kernel_drivers_examples/tree/Firefly_RK3399)
-
-内核配置添加如下
-
-	VIRTIO_BLK
 
 制作linux根文件系统(arm64-distro可以是任意系统的base)
 
@@ -87,6 +85,24 @@
 	ifconfig $1 0.0.0.0 promisc up
 	brctl addif br0 $1
 
-启动虚拟机添加(-nic tap)内核配置添加VIRTIO_NET
+启动虚拟机添加(-nic tap)
 
 	qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 4096 -kernel Image -nographic -append "root=/dev/vda rootfstype=ext4 rw" -drive file=./rootfs.ext4,if=none,id=drive-virtio-disk0,cache=writeback -device virtio-blk-pci,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on -nic tap
+
+或者是用(-netdev tap,id=dev0 -device virtio-net-pci,netdev=dev0)
+
+	qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 4096 -kernel Image -nographic -append "root=/dev/vda rootfstype=ext4 rw" -drive file=./rootfs.ext4,if=none,id=drive-virtio-disk0,cache=writeback -device virtio-blk-pci,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on -netdev tap,id=dev0 -device virtio-net-pci,netdev=dev0
+
+### 网络配置(for gentoo)
+
+gentoo openrc网络配置(/etc/conf.d/net)
+
+	config_eth0="172.28.107.222 netmask 255.255.252.0"
+	routes_eth0="default via 172.28.106.1"
+	dns_servers_eth0="192.168.5.28"
+
+开机网卡配置
+
+	cd /etc/init.d
+	ln -s net.lo net.eth0
+	rc-update add net.eth0 default
