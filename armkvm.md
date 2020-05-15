@@ -57,20 +57,23 @@
 
 ## 使用linux发行版本启动虚拟机
 
+[参考kernel_drivers_examples中rk3399制作系统镜像](https://github.com/54shady/kernel_drivers_examples/tree/Firefly_RK3399)
+
 内核配置添加如下
 
 	VIRTIO_BLK
 
-制作ubuntu根文件系统
+制作linux根文件系统(arm64-distro可以是任意系统的base)
 
-	tar xvf ubuntu-base-16.04.6-base-arm64.tar.gz -C arm-ubuntu-rootfs/
-	dd if=/dev/zero of=ubuntu.raw bs=1M count=1024
-	mkfs.ext4 -F ubuntu.ext4
+	tar xvf arm64-distro.tar.gz -C target/
+	dd if=/dev/zero of=rootfs.raw bs=1M count=1024
+	mkfs.ext4 -F rootfs.raw
+	mv rootfs.raw rootfs.ext4
 	mkdir tempfs
-	sudo mount -t ext4 -o loop ubuntu.ext4 tempfs
-	sudo cp -raf arm-ubuntu-rootfs/* tempfs/
+	sudo mount -t ext4 -o loop rootfs.ext4 tempfs
+	sudo cp -raf target/* tempfs/
 	sudo umount tempfs/
 
-启动ubuntu虚拟机
+启动linux虚拟机
 
-	qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 4096 -kernel Image -nographic -append "root=/dev/vda rootfstype=ext4 rw" -drive file=./ubuntu.ext4,if=none,id=drive-virtio-disk0,cache=writeback -device virtio-blk-pci,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on
+	qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 4096 -kernel Image -nographic -append "root=/dev/vda rootfstype=ext4 rw" -drive file=./rootfs.ext4,if=none,id=drive-virtio-disk0,cache=writeback -device virtio-blk-pci,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on
