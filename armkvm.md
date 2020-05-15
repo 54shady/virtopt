@@ -77,3 +77,16 @@
 启动linux虚拟机
 
 	qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 4096 -kernel Image -nographic -append "root=/dev/vda rootfstype=ext4 rw" -drive file=./rootfs.ext4,if=none,id=drive-virtio-disk0,cache=writeback -device virtio-blk-pci,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on
+
+配置网络(host配置br0,虚拟机桥接到该网桥上)
+
+添加配置文件(/etc/qemu-ifup)并添加执行权限
+
+	#!/bin/bash
+
+	ifconfig $1 0.0.0.0 promisc up
+	brctl addif br0 $1
+
+启动虚拟机添加(-nic tap)内核配置添加VIRTIO_NET
+
+	qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 4096 -kernel Image -nographic -append "root=/dev/vda rootfstype=ext4 rw" -drive file=./rootfs.ext4,if=none,id=drive-virtio-disk0,cache=writeback -device virtio-blk-pci,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on -nic tap
