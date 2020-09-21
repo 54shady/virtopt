@@ -1,10 +1,16 @@
 # Make Debug Suckless
 
-## 允许ssh使用root用户登入(/etc/ssh/sshd_config)
+## SSH配置
+
+允许ssh使用root用户登入(/etc/ssh/sshd_config)
 
 	PermitRootLogin yes
 	RSAAuthentication yes
 	PubkeyAuthentication yes
+
+配置免密码登陆
+
+	cat ~/.ssh/id_rsa.pub | ssh -l root 192.168.1.100 "cat > ~/.ssh/authorized_keys"
 
 ## 设置图形界面root自动登入
 
