@@ -195,3 +195,45 @@ deploy the stage4 tarball(install system)
 安装ISO若现卡在detecting file system则在安装前执行下面操作
 
 	umount -l /isodevice
+
+## make ARM CentOS ISO
+
+在官方提供的ISO版本上修改
+
+	mount CentOS-7-aarch64-Everything-1810.iso /mnt/iso/
+
+拷贝ISO所有文件到target目录
+
+	rsync -a /mnt/iso/ target/
+
+在target顶层目录中添加[kickstart文件](./ks.cfg)
+
+修改[EFI/BOOT/grub.cfg](./armgrub.cfg)如下
+
+	linux /images/pxeboot/vmlinuz ... acpi=force inst.ks=hd:LABEL=CentOS\x207\x20aarch64:/ks.cfg
+
+在target目录中执行如下命令生成ISO
+
+	genisoimage -e images/efiboot.img -no-emul-boot -T -J -R -c boot.catalog -hide boot.catalog -V "CentOS 7 aarch64" -o /path/to/centos.iso .
+
+使用虚拟机测试生成的ISO
+
+	qemu-system-aarch64 \
+	-machine virt-5.1,accel=kvm,gic-version=3 \
+	-cpu host \
+	-bios /usr/share/AAVMF/AAVMF_CODE.fd \
+	-m 16384 \
+	-smp 8 \
+	-nodefaults \
+	-rtc base=localtime \
+	-boot d \
+	-hda demo.qcow2 \
+	-usb \
+	-device piix3-usb-uhci \
+	-device usb-tablet \
+	-device usb-kbd \
+	-vnc 0.0.0.0:0 \
+	-k en-us \
+	-device virtio-gpu-pci \
+	-msg timestamp=on \
+	-cdrom /path/to/centos.iso
