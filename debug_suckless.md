@@ -214,7 +214,7 @@ deploy the stage4 tarball(install system)
 
 在target目录中执行如下命令生成ISO
 
-	genisoimage -e images/efiboot.img -no-emul-boot -T -J -R -c boot.catalog -hide boot.catalog -V "CentOS 7 aarch64" -o /path/to/centos.iso .
+	genisoimage -e images/efiboot.img -no-emul-boot -T -J -R -c boot.catalog -hide boot.catalog -V "myctos" -o /path/to/centos.iso .
 
 使用虚拟机测试生成的ISO
 
