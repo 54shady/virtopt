@@ -8,7 +8,6 @@ from subprocess import Popen, PIPE
 
 
 def run_command(cmd, stdin=None, stdout=PIPE, stderr=None):
-    print(cmd)
     try:
         p = Popen(cmd, shell=True,
                   stdout=stdout, stdin=stdin, stderr=stderr,
@@ -44,8 +43,10 @@ def main():
     run_command("cp armgrub.cfg %s/EFI/BOOT/grub.cfg" % ws)
     run_command("cp ks.cfg %s/" % ws)
 
-    # update metadata file
-    cmd = "createrepo -g %s/repodata/*-comps.xml %s" % (ws, ws)
+    # rebuid the metafile
+    run_command("rm -rvf %s/repodata/*-comps.xml" % ws)
+    run_command("cp comps.xml %s/repodata/" % ws)
+    cmd = "createrepo -g %s/repodata/comps.xml %s" % (ws, ws)
     run_command(cmd)
 
     # pack ISO

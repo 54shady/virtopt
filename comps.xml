@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE comps PUBLIC "-//CentOS//DTD Comps info//EN" "comps.dtd">
+<comps>
+  <group>
+    <id>core</id>
+    <name>Core</name>
+    <description>Smallest possible installation.</description>
+    <default>false</default>
+    <uservisible>false</uservisible>
+    <packagelist>
+      <packagereq type="mandatory">audit</packagereq>
+      <packagereq type="mandatory">basesystem</packagereq>
+      <packagereq type="mandatory">bash</packagereq>
+      <packagereq type="mandatory">btrfs-progs</packagereq>
+      <packagereq type="mandatory">coreutils</packagereq>
+      <packagereq type="mandatory">cronie</packagereq>
+      <packagereq type="mandatory">curl</packagereq>
+      <packagereq type="mandatory">dhclient</packagereq>
+      <packagereq type="mandatory">e2fsprogs</packagereq>
+      <packagereq type="mandatory">filesystem</packagereq>
+      <packagereq type="mandatory">firewalld</packagereq>
+      <packagereq type="mandatory">glibc</packagereq>
+      <packagereq type="mandatory">hostname</packagereq>
+      <packagereq type="mandatory">initscripts</packagereq>
+      <packagereq type="mandatory">iproute</packagereq>
+      <packagereq type="mandatory">iprutils</packagereq>
+      <packagereq type="mandatory">iptables</packagereq>
+      <packagereq type="mandatory">iputils</packagereq>
+      <packagereq type="mandatory">irqbalance</packagereq>
+      <packagereq type="mandatory">kbd</packagereq>
+      <packagereq type="mandatory">kexec-tools</packagereq>
+      <packagereq type="mandatory">less</packagereq>
+      <packagereq type="mandatory">man-db</packagereq>
+      <packagereq type="mandatory">ncurses</packagereq>
+      <packagereq type="mandatory">openssh-clients</packagereq>
+      <packagereq type="mandatory">openssh-server</packagereq>
+      <packagereq type="mandatory">parted</packagereq>
+      <packagereq type="mandatory">passwd</packagereq>
+      <packagereq type="mandatory">plymouth</packagereq>
+      <packagereq type="mandatory">policycoreutils</packagereq>
+      <packagereq type="mandatory">procps-ng</packagereq>
+      <packagereq type="mandatory">rootfiles</packagereq>
+      <packagereq type="mandatory">rpm</packagereq>
+      <packagereq type="mandatory">rsyslog</packagereq>
+      <packagereq type="mandatory">selinux-policy-targeted</packagereq>
+      <packagereq type="mandatory">setup</packagereq>
+      <packagereq type="mandatory">shadow-utils</packagereq>
+      <packagereq type="mandatory">sudo</packagereq>
+      <packagereq type="mandatory">systemd</packagereq>
+      <packagereq type="mandatory">tar</packagereq>
+      <packagereq type="mandatory">tuned</packagereq>
+      <packagereq type="mandatory">util-linux</packagereq>
+      <packagereq type="mandatory">vim-minimal</packagereq>
+      <packagereq type="mandatory">xfsprogs</packagereq>
+      <packagereq type="mandatory">yum</packagereq>
+      <packagereq type="default">biosdevname</packagereq>
+      <packagereq type="default">dracut-config-rescue</packagereq>
+      <packagereq type="default">kernel-tools</packagereq>
+      <packagereq type="default">libsysfs</packagereq>
+      <packagereq type="default">linux-firmware</packagereq>
+      <packagereq type="default">lshw</packagereq>
+      <packagereq type="default">microcode_ctl</packagereq>
+      <packagereq type="default">sg3_utils</packagereq>
+      <packagereq type="default">sg3_utils-libs</packagereq>
+      <packagereq type="optional">dracut-config-generic</packagereq>
+      <packagereq type="optional">dracut-fips</packagereq>
+      <packagereq type="optional">dracut-fips-aesni</packagereq>
+      <packagereq type="optional">dracut-network</packagereq>
+      <packagereq type="optional">initial-setup</packagereq>
+      <packagereq type="optional">openssh-keycat</packagereq>
+      <packagereq type="optional">rdma-core</packagereq>
+      <packagereq type="optional">selinux-policy-mls</packagereq>
+      <packagereq type="optional">tboot</packagereq>
+    </packagelist>
+  </group>
+  <group>
+    <id>localoverlay</id>
+    <name>local overlay</name>
+    <description>Local OverLay</description>
+    <default>false</default>
+    <uservisible>false</uservisible>
+    <packagelist>
+      <packagereq type="mandatory">git</packagereq>
+      <packagereq type="mandatory">tmux</packagereq>
+      <packagereq type="mandatory">nettle</packagereq>
+      <packagereq type="mandatory">nettle-devel</packagereq>
+      <packagereq type="mandatory">gnutls</packagereq>
+	</packagelist>
+  </group>
+  <environment>
+    <id>minimal</id>
+    <name>Minimal Install</name>
+    <description>Basic functionality.</description>
+    <display_order>5</display_order>
+    <grouplist>
+      <groupid>core</groupid>
+      <groupid>localoverlay</groupid>
+    </grouplist>
+  </environment>
+</comps>
