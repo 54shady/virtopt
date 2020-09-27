@@ -216,6 +216,10 @@ deploy the stage4 tarball(install system)
 
 	genisoimage -e images/efiboot.img -no-emul-boot -T -J -R -c boot.catalog -hide boot.catalog -V "myctos" -o /path/to/centos.iso .
 
+裁减rmp后更新metadata
+
+	createrepo -g /path/to/target/repodata/*-c7-x86_64-comps.xml /path/to/target
+
 使用虚拟机测试生成的ISO
 
 	qemu-system-aarch64 \
