@@ -19,6 +19,9 @@ def run_command(cmd, stdin=None, stdout=PIPE, stderr=None):
 
 
 def main():
+    '''
+    python3 ctsiso.py -w /path/to/ws -o /path/to/output.iso -i /iso/mount/point -l /path/to/Package
+    '''
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent(''' centos arm ISO '''))
@@ -27,6 +30,8 @@ def main():
                         required=True)
     parser.add_argument("-i", "--iso", help="iso image mount dir", type=str)
     parser.add_argument("-o", "--output", help="output path", type=str)
+    parser.add_argument("-l", "--local", help="local overlay package", type=str)
+    parser.add_argument("-c", "--cachep", help="add cache package", type=str)
 
     # parse the args
     args = parser.parse_args()
@@ -35,9 +40,17 @@ def main():
     # workspace not ready
     if not os.path.exists(ws):
         os.mkdir(ws)
-        run_command("rsync -av %s %s" % (args.iso, ws))
+        run_command("rsync -av --exclude=Packages/* %s/ %s" % (args.iso, ws))
+
+    # add cache package
+    if args.cachep:
         cachepkg = "/var/cache/yum/aarch64/7/base/packages"
-        run_command("cp -rvf %s/* %s/Packages/" % (cachepkg, ws))
+        if os.path.exists(cachepkg):
+            run_command("cp -rvf %s/* %s/Packages/" % (cachepkg, ws))
+
+    # using local overlay package
+    if args.local:
+        run_command("cp -rvf %s/* %s/Packages/" % (args.local, ws))
 
     # custom the ISO
     run_command("cp armgrub.cfg %s/EFI/BOOT/grub.cfg" % ws)
