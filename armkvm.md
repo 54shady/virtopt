@@ -106,3 +106,30 @@ gentoo openrc网络配置(/etc/conf.d/net)
 	cd /etc/init.d
 	ln -s net.lo net.eth0
 	rc-update add net.eth0 default
+
+## KunPen920
+
+### 网卡中断亲和性
+
+查看网卡所在的NUMA节点(enp125s0f0,1,2,3, 结果都是在node 0)
+
+	for i in `seq 0 3`; do cat /sys/class/net/enp125s0f$i/device/numa_node; done
+
+网卡中断绑定,先关闭irqbalance
+
+	service irqbalance status
+	service irqbalance stop
+
+查看网卡对应的中断号(假设用的是enp125s0f0, 第一列就是中断号,281)
+
+	cat /proc/interrupts | grep enp125s0f0
+
+	281:  ....       ITS-MSI 65536001 Edge      enp125s0f0-TxRx-0
+
+查看当前网卡中断绑核情况
+
+	cat /proc/irq/281/smp_affinity_list
+
+手动绑定网卡的中断到CPU4(建议将中断绑定到物理网卡所在node的cpu上)
+
+	echo 4 > /proc/irq/281/smp_affinity_list
