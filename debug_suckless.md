@@ -55,7 +55,7 @@
 
 创建具有root权限的帐号
 
-	useradd -u 0 -o -g root -G root usera
+	useradd -m -u 0 -o -g root -G root usera
 
 ## 主机端同步调试机(172.20.101.124)的代码
 

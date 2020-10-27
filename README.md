@@ -565,3 +565,9 @@ trace.dat中有如下信息
 ## ARM-KVM
 
 [ARM KVM](armkvm.md)
+
+## KVMTEST
+
+[参考文章 https://lwn.net/Articles/658511](https://lwn.net/Articles/658511)
+
+[参考代码kvmtest.c](kvmtest.c)
