@@ -14,6 +14,8 @@
 
 ## 设置图形界面root自动登入
 
+### ubuntu
+
 设置root密码
 
 	passwd root
@@ -37,6 +39,14 @@
 	fi
 
 	tty -s && mesg n || true
+
+### centos
+
+修改/etc/gdm/custom.conf
+
+	[daemon]
+	AutomaticLoginEnable=true
+	AutomaticLogin=root
 
 ## vnc使用密码文件输入
 

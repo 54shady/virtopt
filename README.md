@@ -245,7 +245,7 @@ cpu->last_load = (irq_load + softirq_load)
 
 [参考: irqbalance详解](https://segmentfault.com/a/1190000015426246)
 
-查看cpu各cache的信息
+查看cpu各cache的信息(getconf -a)
 
 	tree -L 1 /sys/devices/system/cpu/cpu0/cache/
 	/sys/devices/system/cpu/cpu0/cache/
