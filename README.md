@@ -571,3 +571,7 @@ trace.dat中有如下信息
 [参考文章 https://lwn.net/Articles/658511](https://lwn.net/Articles/658511)
 
 [参考代码kvmtest.c](kvmtest.c)
+
+## Intel VMX
+
+[Intel 虚拟化技术](intel.md)
