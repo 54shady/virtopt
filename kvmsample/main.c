@@ -11,7 +11,6 @@
 
 #define KVM_DEVICE "/dev/kvm"
 #define RAM_SIZE 512000000
-#define CODE_START 0x1000
 
 struct kvm {
 	int dev_fd;
@@ -43,27 +42,22 @@ void kvm_reset_vcpu(struct vcpu *vcpu)
 		exit(1);
 	}
 
-	vcpu->sregs.cs.selector = CODE_START;
-	vcpu->sregs.cs.base = CODE_START * 16;
-	vcpu->sregs.ss.selector = CODE_START;
-	vcpu->sregs.ss.base = CODE_START * 16;
-	vcpu->sregs.ds.selector = CODE_START;
-	vcpu->sregs.ds.base = CODE_START * 16;
-	vcpu->sregs.es.selector = CODE_START;
-	vcpu->sregs.es.base = CODE_START * 16;
-	vcpu->sregs.fs.selector = CODE_START;
-	vcpu->sregs.fs.base = CODE_START * 16;
-	vcpu->sregs.gs.selector = CODE_START;
-
+	/*
+	 * load the program at 0xF0000
+	 * base * 16 + selector
+	 * which is the start of the last segment
+	 *
+	 * Start of the last segment
+	 * = (Maximum 8086 Memory) - (Segment Size)
+	 * = 1MB - 64KB
+	 * = 0x100000 - 0x10000 = 0xF0000
+	 */
+	vcpu->sregs.cs.selector = 0x0000;
+	vcpu->sregs.cs.base = 0xF000;
 	if (ioctl(vcpu->vcpu_fd, KVM_SET_SREGS, &vcpu->sregs) < 0) {
 		perror("can not set sregs");
 		exit(1);
 	}
-
-	vcpu->regs.rflags = 0x0000000000000002ULL;
-	vcpu->regs.rip = 0;
-	vcpu->regs.rsp = 0xffffffff;
-	vcpu->regs.rbp= 0;
 
 	if (ioctl(vcpu->vcpu_fd, KVM_SET_REGS, &(vcpu->regs)) < 0) {
 		perror("KVM SET REGS\n");
@@ -99,7 +93,7 @@ void *kvm_cpu_thread(void *data)
 						kvm->vcpus->kvm_run->io.port,
 						*(int *)((char *)(kvm->vcpus->kvm_run) + kvm->vcpus->kvm_run->io.data_offset));
 				/* wait a second */
-				sleep(1);
+				//sleep(1);
 				break;
 			case KVM_EXIT_MMIO:
 				printf("KVM_EXIT_MMIO\n");
