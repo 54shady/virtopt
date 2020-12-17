@@ -12,7 +12,6 @@
 #define KVM_DEVICE "/dev/kvm"
 #define RAM_SIZE 512000000
 #define CODE_START 0x1000
-#define BINARY_FILE "test.bin"
 
 struct kvm {
 	int dev_fd;
@@ -49,7 +48,7 @@ void kvm_reset_vcpu(struct vcpu *vcpu)
 	vcpu->sregs.ss.selector = CODE_START;
 	vcpu->sregs.ss.base = CODE_START * 16;
 	vcpu->sregs.ds.selector = CODE_START;
-	vcpu->sregs.ds.base = CODE_START *16;
+	vcpu->sregs.ds.base = CODE_START * 16;
 	vcpu->sregs.es.selector = CODE_START;
 	vcpu->sregs.es.base = CODE_START * 16;
 	vcpu->sregs.fs.selector = CODE_START;
@@ -122,30 +121,25 @@ exit_kvm:
 	return 0;
 }
 
-void load_binary(struct kvm *kvm)
+void load_binary(void *mem, const char *filename)
 {
-	int fd;
-	int ret = 0;
-	char *p;
+	int  fd;
+	int  nr;
 
-	fd = open(BINARY_FILE, O_RDONLY);
-	if (fd < 0) {
-		fprintf(stderr, "can not open binary file\n");
+	fd = open(filename, O_RDONLY);
+	if (fd == -1) {
+		fprintf(stderr, "Cannot open %s", filename);
+		perror("open");
 		exit(1);
 	}
+	while ((nr = read(fd, mem, 4096)) != -1  &&  nr != 0)
+		mem += nr;
 
-	p = (char *)kvm->ram_start;
-
-	while (1)
-	{
-		/* read binary into kvm memory */
-		ret = read(fd, p, 4096);
-		if (ret <= 0) {
-			break;
-		}
-		printf("read size: %d", ret);
-		p += ret;
+	if (nr == -1) {
+		perror("read");
+		exit(1);
 	}
+	close(fd);
 }
 
 struct kvm *kvm_init(void)
@@ -233,7 +227,7 @@ struct vcpu *kvm_init_vcpu(struct kvm *kvm, int vcpu_id, void *(*fn)(void *))
 		return NULL;
 	}
 
-	printf("%d\n", vcpu->kvm_run_mmap_size);
+	printf("vcpu map size: %d\n", vcpu->kvm_run_mmap_size);
 
 	vcpu->kvm_run = mmap(NULL, vcpu->kvm_run_mmap_size,
 			PROT_READ | PROT_WRITE, MAP_SHARED, vcpu->vcpu_fd, 0);
@@ -272,8 +266,15 @@ void kvm_run_vm(struct kvm *kvm)
 
 int main(int argc, char *argv[])
 {
-	int ret = 0;
-	struct kvm *kvm = kvm_init();
+	struct kvm *kvm;
+
+	if (argc < 2)
+	{
+		printf("Usage %s <binary.bin>\n", argv[0]);
+		return -1;
+	}
+
+	kvm = kvm_init();
 	if (kvm == NULL) {
 		fprintf(stderr, "kvm init fauilt\n");
 		return -1;
@@ -284,7 +285,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	load_binary(kvm);
+	load_binary((void *)kvm->ram_start, argv[1]);
 
 	/* only support one vcpu now */
 	kvm->vcpu_number = 1;
