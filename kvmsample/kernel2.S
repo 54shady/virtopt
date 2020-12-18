@@ -25,7 +25,9 @@ start:
 # It does not use the value at 0xFFFF0 as the location of the reset code
 # rather, it begins executing the code that is at 0xFFFF0
 # Therefore, the normal code to place at 0xFFFF0 is a jump to the actual reset code
-. = 0xfff0 # 当前地址0xfff0
+#
+# In real-mode, address 0xFFF0 is relative to the current segment.
+. = 0xfff0 # 在8086实模式下该地址代表当前段
 	# let's do a test, whether the first insctuct run from here
     mov    $0x48,%al    // H
     outb   %al,$IO_PORT_PSEUDO_SERIAL

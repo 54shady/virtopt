@@ -44,7 +44,7 @@ void kvm_reset_vcpu(struct vcpu *vcpu)
 
 	/*
 	 * load the program at 0xF0000
-	 * base * 16 + selector
+	 * base * 16 + rip
 	 * which is the start of the last segment
 	 *
 	 * Start of the last segment
@@ -54,6 +54,7 @@ void kvm_reset_vcpu(struct vcpu *vcpu)
 	 */
 	vcpu->sregs.cs.selector = 0x0000;
 	vcpu->sregs.cs.base = 0xF000;
+	vcpu->regs.rip = 0x0000;
 	if (ioctl(vcpu->vcpu_fd, KVM_SET_SREGS, &vcpu->sregs) < 0) {
 		perror("can not set sregs");
 		exit(1);
@@ -279,6 +280,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	/* 将程序拷贝到客户机内存的ram_start + 0xF0000地址处??? */
 	load_binary((void *)kvm->ram_start, argv[1]);
 
 	/* only support one vcpu now */
