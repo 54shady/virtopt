@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #define KVM_DEVICE "/dev/kvm"
-#define RAM_SIZE 512000000
+#define RAM_SIZE (512 * 1024 * 1024)
 
 struct kvm {
 	int dev_fd;
@@ -42,19 +42,10 @@ void kvm_reset_vcpu(struct vcpu *vcpu)
 		exit(1);
 	}
 
-	/*
-	 * load the program at 0xF0000
-	 * base * 16 + rip
-	 * which is the start of the last segment
-	 *
-	 * Start of the last segment
-	 * = (Maximum 8086 Memory) - (Segment Size)
-	 * = 1MB - 64KB
-	 * = 0x100000 - 0x10000 = 0xF0000
-	 */
-	vcpu->sregs.cs.selector = 0x0000;
-	vcpu->sregs.cs.base = 0xF000;
-	vcpu->regs.rip = 0x0000;
+	//vcpu->sregs.cs.selector = 0x0000;
+	/* first instruction start from 0xFFFF0 (base + rip) */
+	vcpu->sregs.cs.base = 0xF0000;
+	vcpu->regs.rip = 0xFFF0;
 	if (ioctl(vcpu->vcpu_fd, KVM_SET_SREGS, &vcpu->sregs) < 0) {
 		perror("can not set sregs");
 		exit(1);
@@ -281,7 +272,17 @@ int main(int argc, char *argv[])
 	}
 
 	/* 将程序拷贝到客户机内存的ram_start + 0xF0000地址处??? */
-	load_binary((void *)kvm->ram_start, argv[1]);
+	/*
+	 * load the program at 0xF0000
+	 * base + rip
+	 * which is the start of the last segment
+	 *
+	 * Start of the last segment
+	 * = (Maximum 8086 Memory) - (Segment Size)
+	 * = 1MB - 64KB
+	 * = 0x100000 - 0x10000 = 0xF0000
+	 */
+	load_binary((void *)kvm->ram_start + 0xF0000, argv[1]);
 
 	/* only support one vcpu now */
 	kvm->vcpu_number = 1;
