@@ -30,6 +30,14 @@ bochs -f bochsrc.hello
 
 	b 0x7c00
 
+打开观察寄存器设置
+
+	trace-reg on
+
+查看堆栈
+
+	print-stack
+
 执行程序
 
 	c
