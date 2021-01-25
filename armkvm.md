@@ -11,11 +11,16 @@
 	CONFIG_EXT4_FS
 	CONFIG_BLK_DEV_RAM
 
+交叉编译
+
+	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- arm64_defconfig
+	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j4
+
 [用到的busybox-1.31.1配置文件](kunpeng920_defconfig)
 
 ## 制作ramdisk(使用busybox-1.31.1)
 
-编译busybox
+交叉编译busybox
 
 	mv kunpeng920_defconfig config/
 	make kunpeng920_defconfig
