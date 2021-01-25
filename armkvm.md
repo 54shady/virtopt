@@ -1,24 +1,38 @@
 # ARM-KVM
 
-## 用到的配置文件
+## GCC(gcc version 6.3.1 20170404 (Linaro GCC 6.3-2017.05)
+
+## u-boot(2019.10)
+
+	make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- qemu_arm64_defconfig
+	make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu-
+
+使用qemu启动u-boot
+
+	qemu-system-aarch64 -machine virt -cpu cortex-a57 -bios u-boot.bin -nographic
+
+flash启动u-boot(virt平台支持)
+
+	dd if=/dev/zero of=flash.bin bs=4096 count=16384
+	dd if=u-boot.bin of=flash.bin conv=notrunc bs=4096
+	qemu-system-aarch64 -machine virt -cpu cortex-a57 -m 1G -drive file=flash.bin,format=raw,if=pflash -nographic
+
+## Kernel
 
 [用到的内核v5.7配置文件](arm64_defconfig)
 
-用到如下内核配置
+编译内核
 
-	CONFIG_VIRTIO_NET
-	CONFIG_VIRTIO_BLK
-	CONFIG_EXT4_FS
-	CONFIG_BLK_DEV_RAM
+	mv arm64_defconfig arch/arm64/configs/
 
 交叉编译
 
 	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- arm64_defconfig
 	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j4
 
-[用到的busybox-1.31.1配置文件](kunpeng920_defconfig)
+## Ramdisk
 
-## 制作ramdisk(使用busybox-1.31.1)
+[用到的busybox-1.31.1配置文件](kunpeng920_defconfig)
 
 交叉编译busybox
 
@@ -48,13 +62,6 @@
 
 	gzip --best -c ramdisk > ramdisk.gz
 	mkimage -n "ramdisk" -A arm -O linux -T ramdisk -C gzip -d ramdisk.gz ramdisk.img
-
-## 内核配置和编译
-
-编译内核
-
-	mv arm64_defconfig arch/arm64/configs/
-	make arm64_defconfig
 
 ## 使用ramdisk启动虚拟机
 
