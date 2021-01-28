@@ -62,7 +62,7 @@ CONFIG_STATIC=y
 # CONFIG_FEATURE_INDIVIDUAL is not set
 # CONFIG_FEATURE_SHARED_BUSYBOX is not set
 CONFIG_LFS=y
-CONFIG_CROSS_COMPILER_PREFIX="/home/zeroway/tools/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+CONFIG_CROSS_COMPILER_PREFIX="aarch64-linux-gnu-"
 CONFIG_SYSROOT=""
 CONFIG_EXTRA_CFLAGS=""
 CONFIG_EXTRA_LDFLAGS=""
@@ -88,7 +88,7 @@ CONFIG_INSTALL_APPLET_SYMLINKS=y
 # CONFIG_INSTALL_SH_APPLET_SYMLINK is not set
 # CONFIG_INSTALL_SH_APPLET_HARDLINK is not set
 # CONFIG_INSTALL_SH_APPLET_SCRIPT_WRAPPER is not set
-CONFIG_PREFIX="/home/zeroway/taishan/busybox-1.31.1/ramdiskfs"
+CONFIG_PREFIX="ramdiskfs"
 
 #
 # Busybox Library Tuning

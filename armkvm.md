@@ -32,16 +32,17 @@ flash启动u-boot(virt平台支持)
 
 ## Ramdisk
 
-[用到的busybox-1.31.1配置文件](kunpeng920_defconfig)
+[用到的busybox-1.31.1配置文件](aarch64_defconfig)
 
 交叉编译busybox
 
-	mv kunpeng920_defconfig config/
-	make kunpeng920_defconfig
+	mv aarch64_defconfig config/
+	make aarch64_defconfig
 	make install -j4
 
-构建文件系统目录[添加etc下所有配置文件](etc)
+构建文件系统[genrd.sh](genrd.sh)目录[添加etc下所有配置文件](etc)
 
+	cd busybox-1.31.1
 	mkdir -p ramdiskfs/{var,tmp,sys,root,proc,opt,mnt,lib,home,etc,dev}
 	sudo mknod ramdiskfs/dev/console c 5 1
 	sudo mknod ramdiskfs/dev/null c 1 3
