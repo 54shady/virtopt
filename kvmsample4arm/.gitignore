@@ -1,0 +1,4 @@
+*.o
+*.elf
+kernel.list
+kernel.sym
