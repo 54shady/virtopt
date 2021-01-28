@@ -1,4 +1,15 @@
+[ $# -lt 1 ] && echo "Usage ./genrd.sh <path/to/busybox>" && exit
+
+respwd=$PWD
+echo $respwd
+
+cp qemu_aarch64_defconfig $1/configs/
+cd $1
+make qemu_aarch64_defconfig
+make install -j4
+
 mkdir -p ramdiskfs/{var,tmp,sys,root,proc,opt,mnt,lib,home,etc,dev}
+cp -rvfd $respwd/etc/* ramdiskfs/etc/
 sudo mknod ramdiskfs/dev/console c 5 1
 sudo mknod ramdiskfs/dev/null c 1 3
 

@@ -19,25 +19,25 @@ NorFlash(parallel flash)启动u-boot(virt平台支持)
 
 ## Kernel
 
-[用到的内核v5.7配置文件](arm64_defconfig)
+[用到的内核v5.7配置文件](qemu_defconfig)
 
 编译内核
 
-	mv arm64_defconfig arch/arm64/configs/
+	cp qemu_defconfig arch/arm64/configs/
 
 交叉编译
 
-	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- arm64_defconfig
+	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- qemu_defconfig
 	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j4
 
 ## Ramdisk
 
-[用到的busybox-1.31.1配置文件](aarch64_defconfig)
+[用到的busybox-1.31.1配置文件](qemu_aarch64_defconfig)
 
 交叉编译busybox
 
-	mv aarch64_defconfig config/
-	make aarch64_defconfig
+	mv qemu_aarch64_defconfig config/
+	make qemu_aarch64_defconfig
 	make install -j4
 
 构建文件系统[genrd.sh](genrd.sh)目录[添加etc下所有配置文件](etc)
