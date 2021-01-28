@@ -49,19 +49,20 @@ flash启动u-boot(virt平台支持)
 
 制作ext4的ramdisk数据盘
 
-	dd if=/dev/zero of=ramdisk bs=1M count=16
-	mkfs.ext4 -F ramdisk
+	dd if=/dev/zero of=rootfs.raw bs=1M count=16
+	mkfs.ext4 -F rootfs.raw
+	mv rootfs.raw rootfs.ext4
 
 将编译好的busybox安装到ramdisk中
 
 	mkdir -p tempfs
-	sudo mount -t ext4 -o loop ramdisk tempfs
+	sudo mount -t ext4 -o loop rootfs.ext4 tempfs
 	sudo cp -raf ramdiskfs/* tempfs/
 	sudo umount tempfs/
 
 打包ramdisk成映像文件
 
-	gzip --best -c ramdisk > ramdisk.gz
+	gzip --best -c rootfs.ext4 > ramdisk.gz
 	mkimage -n "ramdisk" -A arm -O linux -T ramdisk -C gzip -d ramdisk.gz ramdisk.img
 
 ## 使用ramdisk启动虚拟机
