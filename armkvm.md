@@ -11,7 +11,7 @@
 
 	qemu-system-aarch64 -machine virt -cpu cortex-a57 -bios u-boot.bin -nographic
 
-flash启动u-boot(virt平台支持)
+NorFlash(parallel flash)启动u-boot(virt平台支持)
 
 	dd if=/dev/zero of=flash.bin bs=4096 count=16384
 	dd if=u-boot.bin of=flash.bin conv=notrunc bs=4096
